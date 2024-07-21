@@ -46,4 +46,7 @@ private:
 
 	// Game-specific
 	class Ship* mShip; // Player's ship
+
+	float mTimeSinceLastShot;
+	float mShootInterval;
 };

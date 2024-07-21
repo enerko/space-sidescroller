@@ -5,11 +5,13 @@
 #include "Ship.h"
 #include "BGSpriteComponent.h"
 #include "Constants.h"
+#include "Bullet.h"
 
 #include <algorithm>
 
 Game::Game():mWindow(nullptr)
 ,mRenderer(nullptr), mIsRunning(true), mUpdatingActors(false)
+,mTimeSinceLastShot(0.0f), mShootInterval(5.0f)
 {}
 
 bool Game::Initialize()
@@ -93,6 +95,15 @@ void Game::UpdateGame()
 		deltaTime = 0.05f;
 	}
 	mTicksCount = SDL_GetTicks();
+
+	// Update time since last bullet was shot
+	mTimeSinceLastShot += deltaTime;
+	if (mTimeSinceLastShot >= mShootInterval)
+	{
+		mTimeSinceLastShot = 0.0f;
+		Bullet* bullet = new Bullet(this);
+		AddActor(bullet);
+	}
 
 	// Update all actors
 	mUpdatingActors = true;
