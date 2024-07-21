@@ -1,6 +1,7 @@
 #pragma once
 #include "Actor.h"
 #include "SDL2/SDL_stdinc.h"
+#include "ColliderComponent.h"
 
 class Ship : public Actor
 {
@@ -11,4 +12,5 @@ public:
 	float GetVerticalVelocity() const { return mVerticalVel; }
 private:
 	float mVerticalVel;
+	ColliderComponent* mCol;
 };

@@ -19,6 +19,12 @@ public:
 	void RemoveSprite(class SpriteComponent* sprite);
 	
 	SDL_Texture* GetTexture(const std::string& fileName);
+
+	void AddCollider(class ColliderComponent* collider);
+	void RemoveCollider(class ColliderComponent* collider);
+
+	std::vector<class ColliderComponent*> GetColliders(){ return mColliders; }
+
 private:
 	void ProcessInput();
 	void UpdateGame();
@@ -36,6 +42,9 @@ private:
 
 	// All the sprite components drawn
 	std::vector<class SpriteComponent*> mSprites;
+	
+	// All the colliders
+	std::vector<class ColliderComponent*> mColliders;
 
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;

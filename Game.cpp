@@ -6,6 +6,7 @@
 #include "BGSpriteComponent.h"
 #include "Constants.h"
 #include "Bullet.h"
+#include "ColliderComponent.h"
 
 #include <algorithm>
 
@@ -146,6 +147,11 @@ void Game::GenerateOutput()
 	for (auto sprite : mSprites)
 	{
 		sprite->Draw(mRenderer);
+	}
+
+	for (auto collider: mColliders)
+	{
+		collider->DrawCollider(mRenderer);
 	}
 
 	SDL_RenderPresent(mRenderer);
@@ -299,4 +305,15 @@ void Game::RemoveSprite(SpriteComponent* sprite)
 	// (We can't swap because it ruins ordering)
 	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
 	mSprites.erase(iter);
+}
+
+void Game::AddCollider(ColliderComponent* collider)
+{
+	mColliders.push_back(collider);
+}
+
+void Game::RemoveCollider(ColliderComponent* collider)
+{
+	auto iter = std::find(mColliders.begin(), mColliders.end(), collider);
+	mColliders.erase(iter);
 }

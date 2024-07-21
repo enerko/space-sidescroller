@@ -11,8 +11,9 @@ public:
 
 	int GetUpdateOrder() const { return mUpdateOrder; }
 
-protected:
+	Actor* GetOwner(){ return mOwner; }
 
+protected:
 	class Actor* mOwner;
 	int mUpdateOrder;
 };

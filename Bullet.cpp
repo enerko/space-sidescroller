@@ -26,6 +26,11 @@ Bullet::Bullet(Game* game)
 	int range = ScreenWidth + 1;
 	int num = rand() % range;
     SetPosition(Vector2(ScreenWidth, static_cast<float>(num)));
+
+	// Create a collider component
+	mCol = new ColliderComponent(this);
+	mCol->SetWidth(100);
+    mCol->SetHeight(100);
 }
 
 void Bullet::UpdateActor(float deltaTime)
