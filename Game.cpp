@@ -4,6 +4,7 @@
 #include "SpriteComponent.h"
 #include "Ship.h"
 #include "BGSpriteComponent.h"
+#include "Constants.h"
 
 #include <algorithm>
 
@@ -19,7 +20,7 @@ bool Game::Initialize()
 		return false;
 	}
 	
-	mWindow = SDL_CreateWindow("Space Sidescroller", 100, 100, 1024, 768, 0);
+	mWindow = SDL_CreateWindow("Space Sidescroller", 100, 100, ScreenWidth, ScreenHeight, 0);
 	if (!mWindow)
 	{
 		SDL_Log("Failed to create window: %s", SDL_GetError());
