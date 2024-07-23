@@ -25,6 +25,8 @@ public:
 
 	std::vector<class ColliderComponent*> GetColliders(){ return mColliders; }
 
+	class Ship* GetPlayer(){ return mShip; } 
+
 private:
 	void ProcessInput();
 	void UpdateGame();

@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Constants.h"
+#include "Ship.h"
 
 #include <random>
 #include <iostream>
@@ -12,7 +13,7 @@
 // Bullet must be drawn, updated position, check for collision?
 Bullet::Bullet(Game* game)
 	:Actor(game)
-	,mBulletSpeed(100.0f)
+	,mBulletSpeed(200.0f)
 	,mBulletPosition(ScreenWidth,0)
 {
 	// Create an animated sprite component
@@ -43,4 +44,11 @@ void Bullet::UpdateActor(float deltaTime)
 	pos.x -= mBulletSpeed * deltaTime;
 
 	SetPosition(pos);
+
+	// Collision with player
+	ColliderComponent* playerCol = GetGame()->GetPlayer()->GetCollider();
+	if (mCol -> Intersect(playerCol) && GetState() != EDead)
+	{
+        SetState(EDead);
+	}
 }

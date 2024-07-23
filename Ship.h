@@ -10,6 +10,7 @@ public:
 	void UpdateActor(float deltaTime) override;
 	void ProcessKeyboard(const uint8_t* state);
 	float GetVerticalVelocity() const { return mVerticalVel; }
+	ColliderComponent* GetCollider(){ return mCol; }
 private:
 	float mVerticalVel;
 	ColliderComponent* mCol;

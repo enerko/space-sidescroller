@@ -9,6 +9,7 @@
 #include "ColliderComponent.h"
 
 #include <algorithm>
+#include <iostream>
 
 Game::Game():mWindow(nullptr)
 ,mRenderer(nullptr), mIsRunning(true), mUpdatingActors(false)
@@ -103,7 +104,6 @@ void Game::UpdateGame()
 	{
 		mTimeSinceLastShot = 0.0f;
 		Bullet* bullet = new Bullet(this);
-		AddActor(bullet);
 	}
 
 	// Update all actors
@@ -261,6 +261,7 @@ void Game::AddActor(Actor* actor)
 
 void Game::RemoveActor(Actor* actor)
 {
+	
 	// Is it in pending actors?
 	auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
 	if (iter != mPendingActors.end())
@@ -272,7 +273,7 @@ void Game::RemoveActor(Actor* actor)
 
 	// Is it in actors?
 	iter = std::find(mActors.begin(), mActors.end(), actor);
-	if (iter != mActors.end())
+	if (iter != mActors.end() && actor->GetState() == Actor::EDead)
 	{
 		// Swap to end of vector and pop off (avoid erase copies)
 		std::iter_swap(iter, mActors.end() - 1);
@@ -314,6 +315,9 @@ void Game::AddCollider(ColliderComponent* collider)
 
 void Game::RemoveCollider(ColliderComponent* collider)
 {
-	auto iter = std::find(mColliders.begin(), mColliders.end(), collider);
-	mColliders.erase(iter);
+    auto iter = std::find(mColliders.begin(), mColliders.end(), collider);
+    if (iter != mColliders.end())
+    {
+        mColliders.erase(iter);
+    }
 }

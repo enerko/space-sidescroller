@@ -40,15 +40,6 @@ void Ship::UpdateActor(float deltaTime)
 	}
 	SetPosition(pos);
 
-	for (auto col : GetGame()->GetColliders())
-	{
-		// If the collider is not the ship collider, handle collision
-		if (mCol != col && mCol->Intersect(col))
-		{
-			// TODO: Handle collision
-			std::cout << "Intersection with " << col->GetOwner() << std::endl;
-		}
-	}
 }
 
 void Ship::ProcessKeyboard(const uint8_t* state)

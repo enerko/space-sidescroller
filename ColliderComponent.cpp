@@ -1,15 +1,18 @@
 #include "ColliderComponent.h"
+#include <iostream>
 
-
-ColliderComponent::ColliderComponent(Actor* owner):Component(owner), 
+ColliderComponent::ColliderComponent(Actor* owner) : Component(owner), 
 mWidth(0.0f), mHeight(0.0f), mOffset(0,0)
 {
-    mOwner -> GetGame() ->AddCollider(this);
+    mOwner->GetGame()->AddCollider(this);
 }
 
 ColliderComponent::~ColliderComponent()
 {
-    mOwner -> GetGame()->RemoveCollider(this);
+    if (mOwner->GetState() != Actor::EDead)
+    {
+        mOwner->GetGame()->RemoveCollider(this);
+    }
 }
 
 
