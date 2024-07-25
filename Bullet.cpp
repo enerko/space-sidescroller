@@ -45,10 +45,4 @@ void Bullet::UpdateActor(float deltaTime)
 
 	SetPosition(pos);
 
-	// Collision with player
-	ColliderComponent* playerCol = GetGame()->GetPlayer()->GetCollider();
-	if (mCol -> Intersect(playerCol) && GetState() != EDead)
-	{
-        SetState(EDead);
-	}
 }

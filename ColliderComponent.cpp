@@ -9,10 +9,7 @@ mWidth(0.0f), mHeight(0.0f), mOffset(0,0)
 
 ColliderComponent::~ColliderComponent()
 {
-    if (mOwner->GetState() != Actor::EDead)
-    {
-        mOwner->GetGame()->RemoveCollider(this);
-    }
+    mOwner->GetGame()->RemoveCollider(this);
 }
 
 

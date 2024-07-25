@@ -112,6 +112,16 @@ void Game::UpdateGame()
 	{
 		actor->Update(deltaTime);
 	}
+
+	for (auto col: mColliders)
+	{
+		ColliderComponent* playerCol = mShip->GetCollider();
+		if (col != playerCol && col->Intersect(playerCol))
+		{
+			// Check for state?
+			col->GetOwner()->SetState(Actor::EDead);
+		}
+	}
 	mUpdatingActors = false;
 
 	// Move any pending actors to mActors
