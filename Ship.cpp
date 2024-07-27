@@ -20,6 +20,9 @@ Ship::Ship(Game* game):Actor(game)
 	mCol = new ColliderComponent(this);
 	mCol->SetWidth(100);
     mCol->SetHeight(100);
+
+	mHealth = new HealthComponent(this);
+	mHealth->SetHealth(100);
 }
 
 void Ship::UpdateActor(float deltaTime)

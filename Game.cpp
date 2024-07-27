@@ -113,12 +113,21 @@ void Game::UpdateGame()
 		actor->Update(deltaTime);
 	}
 
+	// Check collision of the bullets with the player's ship
 	for (auto col: mColliders)
 	{
 		ColliderComponent* playerCol = mShip->GetCollider();
+
+		// Bullet intersected with the player
 		if (col != playerCol && col->Intersect(playerCol))
 		{
 			// Check for state?
+			HealthComponent* playerHealth = mShip->GetHealthComponent();
+			
+			// Later add damage component
+			playerHealth->TakeDamage(10);
+
+			// Delete bullet
 			col->GetOwner()->SetState(Actor::EDead);
 		}
 	}
