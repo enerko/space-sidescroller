@@ -1,7 +1,8 @@
 #pragma once
 #include "Component.h"
+#include "Subject.h"
 
-class HealthComponent : public Component
+class HealthComponent : public Component, public Subject<int>
 {
 public:
     HealthComponent(Actor* owner);

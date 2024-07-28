@@ -3,6 +3,7 @@
 #include "SDL2/SDL_stdinc.h"
 #include "ColliderComponent.h"
 #include "HealthComponent.h"
+#include "HealthBarUI.h"
 
 class Ship : public Actor
 {
@@ -17,4 +18,5 @@ private:
 	float mVerticalVel;
 	ColliderComponent* mCol;
 	HealthComponent* mHealth;
+	HealthBarUI* mHealthUI;
 };

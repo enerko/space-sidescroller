@@ -21,8 +21,13 @@ Ship::Ship(Game* game):Actor(game)
 	mCol->SetWidth(100);
     mCol->SetHeight(100);
 
+	// Health data (subject)
 	mHealth = new HealthComponent(this);
 	mHealth->SetHealth(100);
+
+	// Register UI so that it it notified every time 
+	// health is changed
+	mHealth->RegisterObserver(game->GetHealthBar());
 }
 
 void Ship::UpdateActor(float deltaTime)

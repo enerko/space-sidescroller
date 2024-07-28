@@ -112,25 +112,7 @@ void Game::UpdateGame()
 	{
 		actor->Update(deltaTime);
 	}
-
-	// Check collision of the bullets with the player's ship
-	for (auto col: mColliders)
-	{
-		ColliderComponent* playerCol = mShip->GetCollider();
-
-		// Bullet intersected with the player
-		if (col != playerCol && col->Intersect(playerCol))
-		{
-			// Check for state?
-			HealthComponent* playerHealth = mShip->GetHealthComponent();
-			
-			// Later add damage component
-			playerHealth->TakeDamage(10);
-
-			// Delete bullet
-			col->GetOwner()->SetState(Actor::EDead);
-		}
-	}
+	HandleCollisions();
 	mUpdatingActors = false;
 
 	// Move any pending actors to mActors
@@ -157,6 +139,29 @@ void Game::UpdateGame()
 	}
 }
 
+void Game::HandleCollisions()
+{
+	
+	// Check collision of the bullets with the player's ship
+	for (auto col: mColliders)
+	{
+		ColliderComponent* playerCol = mShip->GetCollider();
+
+		// Bullet intersected with the player
+		if (col != playerCol && col->Intersect(playerCol))
+		{
+			// Check for state?
+			HealthComponent* playerHealth = mShip->GetHealthComponent();
+			
+			// Later add damage component
+			playerHealth->TakeDamage(10);
+
+			// Delete bullet
+			col->GetOwner()->SetState(Actor::EDead);
+		}
+	}
+}
+
 void Game::GenerateOutput()
 {
 	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
@@ -178,11 +183,19 @@ void Game::GenerateOutput()
 
 void Game::LoadData()
 {
+	// UI stuff
+	mHealthBar = new HealthBarUI(this);
+
+	// Initial setup (updated elsewhere)
+	for (auto element: mUIElements)
+	{
+		element->Draw(mRenderer);
+	} 
+
 	// Create player's ship
 	mShip = new Ship(this);
 	mShip->SetPosition(Vector2(100.0f, 384.0f));
 	mShip->SetScale(1.5f);
-
 
 	Actor* temp = new Actor(this);
 	temp->SetPosition(Vector2(512.0f, 384.0f));
@@ -340,3 +353,10 @@ void Game::RemoveCollider(ColliderComponent* collider)
         mColliders.erase(iter);
     }
 }
+
+void Game::AddUIElement(UIElement* element)
+{
+	mUIElements.push_back(element);
+}
+
+

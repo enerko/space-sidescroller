@@ -26,7 +26,12 @@ public:
 	std::vector<class ColliderComponent*> GetColliders(){ return mColliders; }
 
 	class Ship* GetPlayer(){ return mShip; } 
+	class HealthBarUI* GetHealthBar() { return mHealthBar; }
 
+	void AddUIElement(class UIElement* element);
+	void RemoveUIElement(class UIElement* element);
+
+	void HandleCollisions();
 private:
 	void ProcessInput();
 	void UpdateGame();
@@ -48,6 +53,9 @@ private:
 	// All the colliders
 	std::vector<class ColliderComponent*> mColliders;
 
+	// All the UI elements
+	std::vector<class UIElement*> mUIElements;
+
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
 	Uint32 mTicksCount;
@@ -60,4 +68,6 @@ private:
 
 	float mTimeSinceLastShot;
 	float mShootInterval;
+
+	class HealthBarUI* mHealthBar;
 };
