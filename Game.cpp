@@ -173,6 +173,11 @@ void Game::GenerateOutput()
 		sprite->Draw(mRenderer);
 	}
 
+	for (auto element: mUIElements)
+	{
+		element->Draw(mRenderer);
+	} 
+
 	for (auto collider: mColliders)
 	{
 		collider->DrawCollider(mRenderer);
@@ -185,12 +190,6 @@ void Game::LoadData()
 {
 	// UI stuff
 	mHealthBar = new HealthBarUI(this);
-
-	// Initial setup (updated elsewhere)
-	for (auto element: mUIElements)
-	{
-		element->Draw(mRenderer);
-	} 
 
 	// Create player's ship
 	mShip = new Ship(this);

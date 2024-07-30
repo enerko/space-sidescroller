@@ -1,5 +1,6 @@
 #include "BGSpriteComponent.h"
 #include "Actor.h"
+#include <iostream>
 
 BGSpriteComponent::BGSpriteComponent(class Actor* owner, int drawOrder)
 :SpriteComponent(owner, drawOrder), mScrollSpeed(0.0f)
@@ -36,6 +37,7 @@ void BGSpriteComponent::Draw(SDL_Renderer* renderer)
 			nullptr,
 			&r
 		);
+
 	}
 }
 

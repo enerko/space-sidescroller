@@ -2,7 +2,7 @@
 #include <iostream>
 
 HealthBarUI::HealthBarUI(Game* game):UIElement(game), Observer<int>(),
-mHealthBarHeight(50.0f), mHealthBarWidth(100.0f), mHealthBarPos(Vector2(25,25))
+mHealthBarHeight(50.0f), mHealthBarWidth(100.0f), mHealthBarPos(Vector2(50,50))
 {
     std::cout << "Health Bar UI created" << std::endl;
 }
