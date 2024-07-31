@@ -9,7 +9,7 @@ public:
     // Initial set up should be done here
     virtual void Draw(SDL_Renderer* renderer);
 
-    // Updates happen here (like health)
+    // Updates happen here for input based elements
     virtual void Update();
 
     enum UIState { EActive, EClosed };

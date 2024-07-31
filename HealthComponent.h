@@ -2,14 +2,13 @@
 #include "Component.h"
 #include "Subject.h"
 
-class HealthComponent : public Component, public Subject<int>
+class HealthComponent : public Component, public Subject<float>
 {
 public:
-    HealthComponent(Actor* owner);
-    int GetHealth(){ return mHealth; }
-    void SetHealth(int health){ mHealth = health; }
-    void TakeDamage(int damage);
+    HealthComponent(Actor* owner, float health);
+    void TakeDamage(float damage);
 
 private:
-    int mHealth;
+    float mHealth;
+    float mMaxHealth;
 };

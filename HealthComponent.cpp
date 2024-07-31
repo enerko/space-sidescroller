@@ -3,17 +3,17 @@
 #include <iostream>
 
 // Any objects with health should add this component
-HealthComponent::HealthComponent(Actor* owner):Component(owner), Subject<int>(),
-mHealth(0)
+HealthComponent::HealthComponent(Actor* owner, float health):Component(owner), Subject<float>()
 {
-    
+    mMaxHealth = mHealth = health;
 }
 
-void HealthComponent::TakeDamage(int damage)
+void HealthComponent::TakeDamage(float damage)
 {
-    int health = GetHealth() - damage;
-    SetHealth(health);
-    NotifyObservers(health);
-    std::cout << "Health: " << health << std::endl;
+    mHealth -= damage;
+
+    // Notify the health percentage to the UI
+    NotifyObservers(static_cast<float>(mHealth / mMaxHealth));
+
 }
 

@@ -1,6 +1,7 @@
 #include "Ship.h"
 #include "AnimSpriteComponent.h"
 #include "Game.h"
+#include "Constants.h"
 
 #include <iostream>
 
@@ -22,8 +23,7 @@ Ship::Ship(Game* game):Actor(game)
     mCol->SetHeight(100);
 
 	// Health data (subject)
-	mHealth = new HealthComponent(this);
-	mHealth->SetHealth(100);
+	mHealth = new HealthComponent(this, PlayerMaxHealth);
 
 	// Register UI so that it it notified every time 
 	// health is changed
