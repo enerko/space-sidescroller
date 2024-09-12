@@ -25,8 +25,7 @@ Ship::Ship(Game* game):Actor(game)
 	// Health data (subject)
 	mHealth = new HealthComponent(this, PlayerMaxHealth);
 
-	// Register UI so that it it notified every time 
-	// health is changed
+	// Register UI so that it it notified every time health is changed
 	mHealth->RegisterObserver(game->GetHealthBar());
 }
 
@@ -38,13 +37,13 @@ void Ship::UpdateActor(float deltaTime)
 	pos.y -= mVerticalVel * deltaTime;
 	// Restrict position to the height of the screen
 	
-	if (pos.y < 25.0f)
+	if (pos.y < minScreenPosY)
 	{
-		pos.y = 25.0f;
+		pos.y = minScreenPosY;
 	}
-	else if (pos.y > 743.0f)
+	else if (pos.y > maxScreenPosY)
 	{
-		pos.y = 743.0f;
+		pos.y = maxScreenPosY;
 	}
 	SetPosition(pos);
 

@@ -24,8 +24,8 @@ Bullet::Bullet(Game* game)
 	}
 	sc->SetTexture(tex);
 
-	int range = ScreenWidth + 1;
-	int num = rand() % range;
+	// Spawn bullet within valid range
+	int num = (rand() % (maxScreenPosY - minScreenPosY + 1)) + minScreenPosY;
     SetPosition(Vector2(ScreenWidth, static_cast<float>(num)));
 
 	// Create a collider component

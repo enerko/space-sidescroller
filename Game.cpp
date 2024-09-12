@@ -141,7 +141,7 @@ void Game::UpdateGame()
 
 void Game::HandleCollisions()
 {
-	
+
 	// Check collision of the bullets with the player's ship
 	for (auto col: mColliders)
 	{
