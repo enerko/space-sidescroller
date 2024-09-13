@@ -7,14 +7,17 @@
 #include "Constants.h"
 #include "Bullet.h"
 #include "ColliderComponent.h"
+#include "PauseMenu.h"
+#include "SDL2/SDL_ttf.h"
 
 #include <algorithm>
 #include <iostream>
 
 Game::Game():mWindow(nullptr)
 ,mRenderer(nullptr), mIsRunning(true), mUpdatingActors(false)
-,mTimeSinceLastShot(0.0f), mShootInterval(5.0f)
-{}
+,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay)
+{
+}
 
 bool Game::Initialize()
 {
@@ -44,6 +47,12 @@ bool Game::Initialize()
 		return false;
 	}
 
+	if (TTF_Init() == -1) {
+        SDL_Log("Unable to initialize SDL_TTF: %s", SDL_GetError());
+        return false;
+    }
+
+
 	LoadData();
 
 	mTicksCount = SDL_GetTicks();
@@ -52,13 +61,24 @@ bool Game::Initialize()
 }
 
 void Game::RunLoop()
-{
+{	
 	while (mIsRunning)
 	{
 		ProcessInput();
-		UpdateGame();
 		GenerateOutput();
+		if (mGameState == EGameplay)
+		{
+			UpdateGame();
+			PlayerInput();
+		}
 	}
+}
+
+void Game::PlayerInput()
+{
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+	// Process ship input
+	mPlayer->ProcessKeyboard(state);
 }
 
 void Game::ProcessInput()
@@ -71,6 +91,18 @@ void Game::ProcessInput()
 			case SDL_QUIT:
 				mIsRunning = false;
 				break;
+			
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym == SDLK_p && mGameState == EGameplay)
+                {
+                    mGameState = EPaused;
+					mPauseMenu = new PauseMenu(this);
+                }
+				else if (event.key.keysym.sym == SDLK_p && mGameState == EPaused)
+				{
+					delete mPauseMenu;
+					mGameState = EGameplay;
+				}
 		}
 	}
 	
@@ -79,17 +111,13 @@ void Game::ProcessInput()
 	{
 		mIsRunning = false;
 	}
-
-	// Process ship input
-	mShip->ProcessKeyboard(state);
 }
 
 void Game::UpdateGame()
 {
 	// Compute delta time
 	// Wait until 16ms has elapsed since last frame
-	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16))
-		;
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
 
 	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
 	if (deltaTime > 0.05f)
@@ -132,6 +160,11 @@ void Game::UpdateGame()
 		}
 	}
 
+	if (mPlayer-> GetState() == Actor::EDead)
+	{
+		mGameState = EGameOver;
+	}
+
 	// Delete dead actors (which removes them from mActors)
 	for (auto actor : deadActors)
 	{
@@ -145,13 +178,13 @@ void Game::HandleCollisions()
 	// Check collision of the bullets with the player's ship
 	for (auto col: mColliders)
 	{
-		ColliderComponent* playerCol = mShip->GetCollider();
+		ColliderComponent* playerCol = mPlayer->GetCollider();
 
 		// Bullet intersected with the player
 		if (col != playerCol && col->Intersect(playerCol))
 		{
 			// Check for state?
-			HealthComponent* playerHealth = mShip->GetHealthComponent();
+			HealthComponent* playerHealth = mPlayer->GetHealthComponent();
 			
 			// Later add damage component
 			playerHealth->TakeDamage(10);
@@ -173,11 +206,28 @@ void Game::GenerateOutput()
 		sprite->Draw(mRenderer);
 	}
 
-	for (auto element: mUIElements)
+	// Update UI screens
+	for (auto ui : mUIElements)
 	{
-		element->Draw(mRenderer);
-	} 
-
+		if (ui->GetState() == UIElement::EActive)
+		{
+			ui->Draw(mRenderer);
+		}
+	}
+	// Delete any UIElements that are closed
+	auto iter = mUIElements.begin();
+	while (iter != mUIElements.end())
+	{
+		if ((*iter)->GetState() == UIElement::EClosed)
+		{
+			delete *iter;
+			iter = mUIElements.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
 	for (auto collider: mColliders)
 	{
 		collider->DrawCollider(mRenderer);
@@ -192,9 +242,9 @@ void Game::LoadData()
 	mHealthBar = new HealthBarUI(this);
 
 	// Create player's ship
-	mShip = new Ship(this);
-	mShip->SetPosition(Vector2(100.0f, 384.0f));
-	mShip->SetScale(1.5f);
+	mPlayer = new Ship(this);
+	mPlayer->SetPosition(Vector2(100.0f, 384.0f));
+	mPlayer->SetScale(1.5f);
 
 	Actor* temp = new Actor(this);
 	temp->SetPosition(Vector2(512.0f, 384.0f));
@@ -271,6 +321,7 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 void Game::Shutdown()
 {
 	UnloadData();
+	TTF_Quit();
 	IMG_Quit();
 	SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);

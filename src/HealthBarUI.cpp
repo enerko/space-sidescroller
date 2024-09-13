@@ -9,14 +9,14 @@ mHealthBarHeight(20.0f), mHealthBarWidth(200.0f), mHealthBarPos(Vector2(20,20)),
 
 HealthBarUI::~HealthBarUI()
 {
-
+    Close();
 }
 
 void HealthBarUI::Draw(SDL_Renderer* renderer)
 {
     DrawHealthOutline(renderer);
     DrawHealthFill(renderer);
-
+    
 }
 
 void HealthBarUI::DrawHealthOutline(SDL_Renderer* renderer)

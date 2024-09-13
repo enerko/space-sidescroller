@@ -11,4 +11,5 @@ public:
 private:
     float mHealth;
     float mMaxHealth;
+    class Actor* mOwner;
 };

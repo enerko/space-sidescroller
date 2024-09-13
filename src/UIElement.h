@@ -1,3 +1,4 @@
+#pragma once
 #include "SDL2/SDL.h"
 
 class UIElement
@@ -19,4 +20,6 @@ public:
 protected:
     class Game* mGame;
     UIState mState;
+    
+
 };

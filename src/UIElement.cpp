@@ -1,5 +1,7 @@
 #include "UIElement.h"
 #include "Game.h"
+#include <iostream>
+#include <SDL2/SDL_ttf.h>
 
 UIElement::UIElement(Game* game)
     : mGame(game)
@@ -29,3 +31,4 @@ void UIElement::Close()
 {
     mState = EClosed;
 }
+

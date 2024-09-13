@@ -25,13 +25,27 @@ public:
 
 	std::vector<class ColliderComponent*> GetColliders(){ return mColliders; }
 
-	class Ship* GetPlayer(){ return mShip; } 
+	class Ship* GetPlayer(){ return mPlayer; } 
 	class HealthBarUI* GetHealthBar() { return mHealthBar; }
 
 	void AddUIElement(class UIElement* element);
 	void RemoveUIElement(class UIElement* element);
 
 	void HandleCollisions();
+
+	bool IsGameOver(){ return mIsGameOver;}
+
+	SDL_Renderer* GetRenderer(){return mRenderer;}
+	
+	enum GameState
+	{
+		EGameplay,
+		EPaused,
+		EGameOver
+	};
+
+	void PlayerInput();
+
 private:
 	void ProcessInput();
 	void UpdateGame();
@@ -64,10 +78,16 @@ private:
 	bool mUpdatingActors;
 
 	// Game-specific
-	class Ship* mShip; // Player's ship
+	class Ship* mPlayer; // Player's ship
 
 	float mTimeSinceLastShot;
 	float mShootInterval;
 
 	class HealthBarUI* mHealthBar;
+	bool mIsGameOver;
+
+	class StateMachine* mStateMachine;
+	GameState mGameState;
+
+	class PauseMenu* mPauseMenu;
 };

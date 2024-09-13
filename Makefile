@@ -7,7 +7,7 @@ INCLUDE_DIR := $(SRC_DIR)/include
 LIB_DIR := $(SRC_DIR)/lib
 
 # Define the libraries
-LIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lfmod_vc -lfmodstudio_vc
+LIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 # Find all the .cpp files in the src directory
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
