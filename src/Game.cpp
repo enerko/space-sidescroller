@@ -8,6 +8,7 @@
 #include "Bullet.h"
 #include "ColliderComponent.h"
 #include "PauseMenu.h"
+#include "GameOverMenu.h"
 #include "SDL2/SDL_ttf.h"
 
 #include <algorithm>
@@ -15,7 +16,7 @@
 
 Game::Game():mWindow(nullptr)
 ,mRenderer(nullptr), mIsRunning(true), mUpdatingActors(false)
-,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay)
+,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay), mGameOverMenu(nullptr)
 {
 }
 
@@ -70,6 +71,12 @@ void Game::RunLoop()
 		{
 			UpdateGame();
 			PlayerInput();
+		}
+
+		if (mGameState == EGameOver && mGameOverMenu == nullptr)
+		{
+			std::cout << "GAMEOVER!" << std::endl;
+			mGameOverMenu = new GameOverMenu(this);
 		}
 	}
 }
@@ -160,6 +167,7 @@ void Game::UpdateGame()
 		}
 	}
 
+	// If player is dead, set Game to GameOver
 	if (mPlayer-> GetState() == Actor::EDead)
 	{
 		mGameState = EGameOver;
@@ -230,7 +238,8 @@ void Game::GenerateOutput()
 	}
 	for (auto collider: mColliders)
 	{
-		collider->DrawCollider(mRenderer);
+		// Debug: draw colliders
+		// collider->DrawCollider(mRenderer);
 	}
 
 	SDL_RenderPresent(mRenderer);

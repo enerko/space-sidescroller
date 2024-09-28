@@ -30,8 +30,8 @@ Bullet::Bullet(Game* game)
 
 	// Create a collider component
 	mCol = new ColliderComponent(this);
-	mCol->SetWidth(100);
-    mCol->SetHeight(100);
+	mCol->SetWidth(30);
+    mCol->SetHeight(20);
 }
 
 void Bullet::UpdateActor(float deltaTime)

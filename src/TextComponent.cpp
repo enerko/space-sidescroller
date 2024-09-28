@@ -9,6 +9,8 @@ SDL_Color color, int fontSize, int posX, int posY)
 {
     mTextTexture = LoadFont(fontSize, text, color);
     SDL_QueryTexture(mTextTexture, nullptr, nullptr, &mTextRect.w, &mTextRect.h);
+    mTextRect.x = posX - mTextRect.w / 2; // Center horizontally
+    mTextRect.y = posY - mTextRect.h / 2; // Center vertically
 }
 
 TextComponent::~TextComponent()
@@ -18,17 +20,15 @@ TextComponent::~TextComponent()
 
 void TextComponent::Draw(SDL_Renderer* renderer)
 {
-    Display(100, 100, renderer);
+    Display(renderer);
 }
 
-void TextComponent::Display(int x, int y, SDL_Renderer* renderer) const
+void TextComponent::Display(SDL_Renderer* renderer) const
 {
     // Ensure that the texture is valid before attempting to draw
     if (mTextTexture != nullptr)
     {
         // Copy the texture to the renderer at the specified position and size
-        mTextRect.x = x;
-        mTextRect.y = y;
         SDL_RenderCopy(renderer, mTextTexture, nullptr, &mTextRect);
     }
     else

@@ -90,4 +90,5 @@ private:
 	GameState mGameState;
 
 	class PauseMenu* mPauseMenu;
+	class GameOverMenu* mGameOverMenu;
 };

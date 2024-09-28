@@ -17,7 +17,7 @@ void HealthComponent::TakeDamage(float damage)
     // Notify the health percentage to the UI
     NotifyObservers(static_cast<float>(mHealth / mMaxHealth));
 
-    if (mHealth < 0)
+    if (mHealth <= 0)
     {
         mOwner->SetState(Actor::EDead);
     }

@@ -20,7 +20,7 @@ Ship::Ship(Game* game):Actor(game)
 
 	mCol = new ColliderComponent(this);
 	mCol->SetWidth(100);
-    mCol->SetHeight(100);
+    mCol->SetHeight(50);
 
 	// Health data (subject)
 	mHealth = new HealthComponent(this, PlayerMaxHealth);
@@ -46,7 +46,6 @@ void Ship::UpdateActor(float deltaTime)
 		pos.y = maxScreenPosY;
 	}
 	SetPosition(pos);
-
 }
 
 void Ship::ProcessKeyboard(const uint8_t* state)
