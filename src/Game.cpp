@@ -110,6 +110,14 @@ void Game::ProcessInput()
 					delete mPauseMenu;
 					mGameState = EGameplay;
 				}
+			default:
+                // Delegate input to GameOverMenu if in GameOver state
+                if (mGameState == EGameOver && mGameOverMenu != nullptr)
+                {
+                    mGameOverMenu->Update(event);  // Delegate event to GameOverMenu
+                }
+                break;
+        	
 		}
 	}
 	
