@@ -36,6 +36,8 @@ public:
 	bool IsGameOver(){ return mIsGameOver;}
 
 	SDL_Renderer* GetRenderer(){return mRenderer;}
+
+	void ResetGame();
 	
 	enum GameState
 	{
@@ -67,9 +69,6 @@ private:
 	// All the colliders
 	std::vector<class ColliderComponent*> mColliders;
 
-	// All the UI elements
-	std::vector<class UIElement*> mUIElements;
-
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
 	Uint32 mTicksCount;
@@ -89,6 +88,6 @@ private:
 	class StateMachine* mStateMachine;
 	GameState mGameState;
 
-	class PauseMenu* mPauseMenu;
-	class GameOverMenu* mGameOverMenu;
+	class UIPanel* mPauseMenu;
+	class UIPanel* mGameOverMenu;
 };

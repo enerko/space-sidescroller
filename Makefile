@@ -1,5 +1,6 @@
 # Define the compiler
 CXX := g++
+CXXFLAGS := -g
 
 # Define the directories
 SRC_DIR := src
@@ -18,7 +19,7 @@ TARGET := main
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CXX) $(SRCS) -I $(INCLUDE_DIR) -L $(LIB_DIR) $(LIBS) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(SRCS) -I $(INCLUDE_DIR) -L $(LIB_DIR) $(LIBS) -o $(TARGET)
 
 clean:
 	del $(TARGET)

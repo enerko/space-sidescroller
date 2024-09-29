@@ -7,16 +7,15 @@
 #include "Constants.h"
 #include "Bullet.h"
 #include "ColliderComponent.h"
-#include "PauseMenu.h"
-#include "GameOverMenu.h"
 #include "SDL2/SDL_ttf.h"
+#include "UIPanel.h"
 
 #include <algorithm>
 #include <iostream>
 
 Game::Game():mWindow(nullptr)
 ,mRenderer(nullptr), mIsRunning(true), mUpdatingActors(false)
-,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay), mGameOverMenu(nullptr)
+,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay), mGameOverMenu(nullptr), mPauseMenu(nullptr)
 {
 }
 
@@ -65,6 +64,8 @@ void Game::RunLoop()
 {	
 	while (mIsRunning)
 	{
+		// start gameplay state
+		
 		ProcessInput();
 		GenerateOutput();
 		if (mGameState == EGameplay)
@@ -73,13 +74,38 @@ void Game::RunLoop()
 			PlayerInput();
 		}
 
+		if (mGameState == EPaused && mPauseMenu == nullptr)
+		{
+			mPauseMenu = new UIPanel(this);
+			mPauseMenu -> AddText(this, "paused");
+		}
+
 		if (mGameState == EGameOver && mGameOverMenu == nullptr)
 		{
 			std::cout << "GAMEOVER!" << std::endl;
-			mGameOverMenu = new GameOverMenu(this);
-		}
+			UnloadData();
+
+			// TODO: Move this to a state class later
+			mGameOverMenu = new UIPanel(this);
+			// Create a black texture
+			SDL_Texture* blackTexture = SDL_CreateTexture(this->GetRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, ScreenWidth, ScreenHeight);
+			mGameOverMenu -> AddImage(this, blackTexture);
+			mGameOverMenu -> AddText(this, "Game over!");
+			
+			mGameOverMenu -> AddButton(this, "Restart", 
+					[this]() {  
+						std::cout << "Button clicked, restarting game!" << std::endl;
+						this->ResetGame();  // Call ResetGame() method
+					},
+					200, 150, 200, 50, {255, 0, 0, 255}  // Button position, size, color
+				);
+				}
+			
+
 	}
 }
+
+
 
 void Game::PlayerInput()
 {
@@ -103,7 +129,8 @@ void Game::ProcessInput()
 				if (event.key.keysym.sym == SDLK_p && mGameState == EGameplay)
                 {
                     mGameState = EPaused;
-					mPauseMenu = new PauseMenu(this);
+					
+
                 }
 				else if (event.key.keysym.sym == SDLK_p && mGameState == EPaused)
 				{
@@ -175,17 +202,28 @@ void Game::UpdateGame()
 		}
 	}
 
-	// If player is dead, set Game to GameOver
-	if (mPlayer-> GetState() == Actor::EDead)
-	{
-		mGameState = EGameOver;
-	}
-
 	// Delete dead actors (which removes them from mActors)
 	for (auto actor : deadActors)
 	{
 		delete actor;
 	}
+
+	// Check if mPlayer is in the mActors list
+    bool playerExists = false;
+    for (auto actor : mActors)
+    {
+        if (actor == mPlayer)
+        {
+            playerExists = true;
+            break;
+        }
+    }
+
+    // If player is not in the actors list, set Game to GameOver
+    if (!playerExists)
+    {
+        mGameState = EGameOver; 
+    }
 }
 
 void Game::HandleCollisions()
@@ -222,33 +260,27 @@ void Game::GenerateOutput()
 		sprite->Draw(mRenderer);
 	}
 
-	// Update UI screens
-	for (auto ui : mUIElements)
-	{
-		if (ui->GetState() == UIElement::EActive)
-		{
-			ui->Draw(mRenderer);
-		}
-	}
-	// Delete any UIElements that are closed
-	auto iter = mUIElements.begin();
-	while (iter != mUIElements.end())
-	{
-		if ((*iter)->GetState() == UIElement::EClosed)
-		{
-			delete *iter;
-			iter = mUIElements.erase(iter);
-		}
-		else
-		{
-			++iter;
-		}
-	}
 	for (auto collider: mColliders)
 	{
 		// Debug: draw colliders
 		// collider->DrawCollider(mRenderer);
 	}
+
+	// TODO: Group up the panels into a vector
+
+	if (mGameOverMenu != nullptr)
+	{
+		mGameOverMenu -> Draw(mRenderer);
+	}
+
+	if (mPauseMenu != nullptr)
+	{
+		mPauseMenu -> Draw(mRenderer);
+	}
+
+
+
+
 
 	SDL_RenderPresent(mRenderer);
 }
@@ -291,12 +323,17 @@ void Game::UnloadData()
 	// Because ~Actor calls RemoveActor, have to use a different style loop
 	while (!mActors.empty())
 	{
+		std::cout << mActors.size() << std::endl;
+		std::cout << "Clearing actors" << std::endl;
 		delete mActors.back();
+		mActors.pop_back();
+
 	}
 
 	// Destroy textures
 	for (auto i : mTextures)
 	{
+		std::cout << "Clearing textures" << std::endl;
 		SDL_DestroyTexture(i.second);
 	}
 	mTextures.clear();
@@ -343,6 +380,12 @@ void Game::Shutdown()
 	SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
 	SDL_Quit();
+}
+
+void Game::ResetGame()
+{
+	std::cout << "Reset game" << std::endl; 
+	mGameState = EPaused;
 }
 
 void Game::AddActor(Actor* actor)
@@ -421,9 +464,5 @@ void Game::RemoveCollider(ColliderComponent* collider)
     }
 }
 
-void Game::AddUIElement(UIElement* element)
-{
-	mUIElements.push_back(element);
-}
 
 
