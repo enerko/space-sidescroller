@@ -21,12 +21,6 @@ Ship::Ship(Game* game):Actor(game)
 	mCol = new ColliderComponent(this);
 	mCol->SetWidth(100);
     mCol->SetHeight(50);
-
-	// Health data (subject)
-	mHealth = new HealthComponent(this, PlayerMaxHealth);
-
-	// Register UI so that it it notified every time health is changed
-	mHealth->RegisterObserver(game->GetHealthBar());
 }
 
 void Ship::UpdateActor(float deltaTime)

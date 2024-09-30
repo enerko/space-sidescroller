@@ -2,6 +2,7 @@
 #include "SDL2/SDL.h"
 #include "Game.h"
 #include "Constants.h"
+#include "HealthComponent.h"
 #include <iostream>
 #include <vector>
 #include <functional>
@@ -15,23 +16,24 @@ public:
     virtual ~UIPanel();
 
     // Initial set up should be done here
-    virtual void Draw(SDL_Renderer* renderer);
+    void Draw(SDL_Renderer* renderer);
 
     // Updates happen here for input based elements
-    virtual void Update(SDL_Event& e);
+    void ProcessInput(SDL_Event& e);
 
-    enum UIState { EActive, EClosed };
-    void Close();
-    UIState GetState() const { return mState; }
+    void ShowPanel(bool showPanel); // Show or hide panel
 
     void AddButton(Game* game, const std::string& text, std::function<void()> onClick, int x, int y, int width, int height, SDL_Color color);
     void AddText(Game* game, const std::string& text, 
     SDL_Color color = {255,255,255,255}, int pointSize = 100, int posX = ScreenWidth / 2, int posY = ScreenHeight / 2);
     void AddImage(Game* game, SDL_Texture* texture);
 
+    void AddHealthBar(Game *game, HealthComponent* healthComponent);
+
 protected:
     class Game* mGame;
-    UIState mState;
+    bool mIsPanelVisible;
+
     std::vector<class UIElement*> mUIElements;
     std::vector<class UIText*> mTexts;
     std::vector<class UIImage*> mImages;
@@ -47,7 +49,7 @@ public:
     virtual void Draw(SDL_Renderer* renderer);
 
     // Updates happen here for input based elements
-    virtual void Update(SDL_Event& e);
+    virtual void ProcessInput(SDL_Event& e);
 
 protected:
     class Game* mGame;
@@ -60,7 +62,7 @@ public:
 
     // Methods to handle rendering and events
     void Draw(SDL_Renderer* renderer);
-    void Update(SDL_Event& e) override;
+    void ProcessInput(SDL_Event& e) override;
     bool HandleEvent(SDL_Event* event);
     void OnClick();        // Callback function for the button click
 

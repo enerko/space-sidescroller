@@ -26,7 +26,6 @@ public:
 	std::vector<class ColliderComponent*> GetColliders(){ return mColliders; }
 
 	class Ship* GetPlayer(){ return mPlayer; } 
-	class HealthBarUI* GetHealthBar() { return mHealthBar; }
 
 	void AddUIElement(class UIElement* element);
 	void RemoveUIElement(class UIElement* element);
@@ -54,6 +53,8 @@ private:
 	void GenerateOutput();
 	void LoadData();
 	void UnloadData();
+
+	void LoadPanels(); // Helper function for LoadData
 	
 	// Map of textures loaded
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
@@ -82,12 +83,14 @@ private:
 	float mTimeSinceLastShot;
 	float mShootInterval;
 
-	class HealthBarUI* mHealthBar;
 	bool mIsGameOver;
 
 	class StateMachine* mStateMachine;
 	GameState mGameState;
 
-	class UIPanel* mPauseMenu;
-	class UIPanel* mGameOverMenu;
+	class UIPanel* mPausePanel;
+	class UIPanel* mGameOverPanel;
+	class UIPanel* mInGamePanel;
+
+	class HealthComponent* mHealth;
 };

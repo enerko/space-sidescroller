@@ -9,13 +9,14 @@
 #include "ColliderComponent.h"
 #include "SDL2/SDL_ttf.h"
 #include "UIPanel.h"
+#include "HealthComponent.h"
 
 #include <algorithm>
 #include <iostream>
 
 Game::Game():mWindow(nullptr)
 ,mRenderer(nullptr), mIsRunning(true), mUpdatingActors(false)
-,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay), mGameOverMenu(nullptr), mPauseMenu(nullptr)
+,mTimeSinceLastShot(0.0f), mShootInterval(5.0f), mGameState(EGameplay), mGameOverPanel(nullptr), mPausePanel(nullptr), mInGamePanel(nullptr)
 {
 }
 
@@ -74,38 +75,15 @@ void Game::RunLoop()
 			PlayerInput();
 		}
 
-		if (mGameState == EPaused && mPauseMenu == nullptr)
-		{
-			mPauseMenu = new UIPanel(this);
-			mPauseMenu -> AddText(this, "paused");
-		}
-
-		if (mGameState == EGameOver && mGameOverMenu == nullptr)
+		if (mGameState == EGameOver)
 		{
 			std::cout << "GAMEOVER!" << std::endl;
+
+			// TODO: this is called infinite times
 			UnloadData();
-
-			// TODO: Move this to a state class later
-			mGameOverMenu = new UIPanel(this);
-			// Create a black texture
-			SDL_Texture* blackTexture = SDL_CreateTexture(this->GetRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, ScreenWidth, ScreenHeight);
-			mGameOverMenu -> AddImage(this, blackTexture);
-			mGameOverMenu -> AddText(this, "Game over!");
-			
-			mGameOverMenu -> AddButton(this, "Restart", 
-					[this]() {  
-						std::cout << "Button clicked, restarting game!" << std::endl;
-						this->ResetGame();  // Call ResetGame() method
-					},
-					200, 150, 200, 50, {255, 0, 0, 255}  // Button position, size, color
-				);
-				}
-			
-
+		}
 	}
 }
-
-
 
 void Game::PlayerInput()
 {
@@ -126,22 +104,16 @@ void Game::ProcessInput()
 				break;
 			
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_p && mGameState == EGameplay)
+				if (event.key.keysym.sym == SDLK_p)
                 {
-                    mGameState = EPaused;
+                    mGameState = (mGameState == EGameplay) ? EPaused : EGameplay;
 					
-
                 }
-				else if (event.key.keysym.sym == SDLK_p && mGameState == EPaused)
-				{
-					delete mPauseMenu;
-					mGameState = EGameplay;
-				}
 			default:
                 // Delegate input to GameOverMenu if in GameOver state
-                if (mGameState == EGameOver && mGameOverMenu != nullptr)
+                if (mGameState == EGameOver)
                 {
-                    mGameOverMenu->Update(event);  // Delegate event to GameOverMenu
+                    mGameOverPanel->ProcessInput(event);  // Delegate event to GameOverMenu
                 }
                 break;
         	
@@ -224,6 +196,8 @@ void Game::UpdateGame()
     {
         mGameState = EGameOver; 
     }
+
+
 }
 
 void Game::HandleCollisions()
@@ -236,12 +210,9 @@ void Game::HandleCollisions()
 
 		// Bullet intersected with the player
 		if (col != playerCol && col->Intersect(playerCol))
-		{
-			// Check for state?
-			HealthComponent* playerHealth = mPlayer->GetHealthComponent();
-			
+		{			
 			// Later add damage component
-			playerHealth->TakeDamage(10);
+			mHealth->TakeDamage(10);
 
 			// Delete bullet
 			col->GetOwner()->SetState(Actor::EDead);
@@ -266,32 +237,68 @@ void Game::GenerateOutput()
 		// collider->DrawCollider(mRenderer);
 	}
 
+	mGameOverPanel -> ShowPanel( mGameState == EGameOver);
+	mPausePanel -> ShowPanel(mGameState == EPaused);
+	mInGamePanel -> ShowPanel(mGameState == EGameplay);
+
 	// TODO: Group up the panels into a vector
 
-	if (mGameOverMenu != nullptr)
+	if (mGameOverPanel != nullptr)
 	{
-		mGameOverMenu -> Draw(mRenderer);
+		mGameOverPanel -> Draw(mRenderer);
 	}
 
-	if (mPauseMenu != nullptr)
+	if (mPausePanel != nullptr)
 	{
-		mPauseMenu -> Draw(mRenderer);
+		mPausePanel -> Draw(mRenderer);
 	}
 
-
+	if (mInGamePanel != nullptr)
+	{
+		mInGamePanel -> Draw(mRenderer);
+	}
 
 
 
 	SDL_RenderPresent(mRenderer);
 }
 
+void Game::LoadPanels()
+{
+	// Create a panel to be displayed when player dies
+	mGameOverPanel = new UIPanel(this);
+	
+	SDL_Texture* blackTexture = SDL_CreateTexture(this->GetRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, ScreenWidth, ScreenHeight);
+	mGameOverPanel -> AddImage(this, blackTexture);
+	mGameOverPanel -> AddText(this, "Game over!");
+	
+	mGameOverPanel -> AddButton(this, "Restart", 
+			[this]() {  
+				std::cout << "Button clicked, restarting game!" << std::endl;
+				this->ResetGame();  // Call ResetGame() method
+			},
+			200, 150, 200, 50, {255, 0, 0, 255}  // Button position, size, color
+		);
+
+	// Create a panel to be displayed when paused
+	mPausePanel = new UIPanel(this);
+	mPausePanel -> AddText(this, "paused");
+
+	// Create a UI Panel for in-game objects
+	mInGamePanel = new UIPanel(this);
+}
+
 void Game::LoadData()
 {
-	// UI stuff
-	mHealthBar = new HealthBarUI(this);
-
+	LoadPanels();
+	
 	// Create player's ship
 	mPlayer = new Ship(this);
+
+	// Create a health component for the player and create a health bar UI
+	mHealth = new HealthComponent(mPlayer, PlayerMaxHealth);
+	mInGamePanel -> AddHealthBar(this, mHealth);
+
 	mPlayer->SetPosition(Vector2(100.0f, 384.0f));
 	mPlayer->SetScale(1.5f);
 

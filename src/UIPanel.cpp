@@ -1,9 +1,12 @@
 #include "Game.h"
 #include "UIPanel.h"
 #include "Constants.h"
+#include "HealthBarUI.h"
 #include <iostream>
 
-UIPanel::UIPanel(class Game* game){};
+UIPanel::UIPanel(class Game* game)
+: mIsPanelVisible(false)
+{};
 UIPanel::~UIPanel()
 {
     while (!mUIElements.empty())
@@ -13,19 +16,27 @@ UIPanel::~UIPanel()
 	}
 };
 
+void UIPanel::ShowPanel(bool showPanel)
+{
+    mIsPanelVisible = showPanel;
+}
+
 void UIPanel::Draw(SDL_Renderer* renderer)
 {
-    for (auto element : mUIElements)
+    if (mIsPanelVisible)
     {
-        element -> Draw(renderer);
+        for (auto element : mUIElements)
+        {
+            element -> Draw(renderer);
+        }
     }
 }
 
-void UIPanel::Update(SDL_Event& e)
+void UIPanel::ProcessInput(SDL_Event& e)
 {
     for (auto element : mUIElements)
     {
-        element -> Update(e);
+        element -> ProcessInput(e);
     }
 
 }
@@ -48,6 +59,12 @@ void UIPanel::AddImage(Game* game, SDL_Texture* texture)
     mUIElements.push_back(newImage);
 }
 
+void UIPanel::AddHealthBar(Game* game, HealthComponent* healthComponent)
+{
+    HealthBarUI* healthBar = new HealthBarUI(game, healthComponent);
+    mUIElements.push_back(healthBar);
+}
+
 UIElement::UIElement(Game* game)
     : mGame(game)
 {
@@ -64,7 +81,7 @@ void UIElement::Draw(SDL_Renderer* renderer)
     // Derived classes should override this method
 }
 
-void UIElement::Update(SDL_Event& e)
+void UIElement::ProcessInput(SDL_Event& e)
 {
     // Default implementation does nothing
     // Derived classes should override this method
@@ -123,7 +140,7 @@ void UIButton::Draw(SDL_Renderer* renderer)
     SDL_RenderCopy(renderer, mTextTexture, nullptr, &textRect);
 }
 
-void UIButton::Update(SDL_Event& e)
+void UIButton::ProcessInput(SDL_Event& e)
 {
     // Handle events for the button
     HandleEvent(&e);

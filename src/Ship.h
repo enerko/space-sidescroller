@@ -13,10 +13,8 @@ public:
 	void ProcessKeyboard(const uint8_t* state);
 	float GetVerticalVelocity() const { return mVerticalVel; }
 	ColliderComponent* GetCollider(){ return mCol; }
-	HealthComponent* GetHealthComponent(){ return mHealth; }
+
 private:
 	float mVerticalVel;
 	ColliderComponent* mCol;
-	HealthComponent* mHealth;
-	HealthBarUI* mHealthUI;
 };

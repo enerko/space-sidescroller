@@ -1,9 +1,12 @@
 #include "HealthBarUI.h"
+#include "HealthComponent.h"
 #include <iostream>
 
-HealthBarUI::HealthBarUI(Game* game):UIElement(game), Observer<float>(),
-mHealthBarHeight(20.0f), mHealthBarWidth(200.0f), mHealthBarPos(Vector2(20,20)), mHealthPercentage(1.0f)
+HealthBarUI::HealthBarUI(Game* game, HealthComponent* health)
+:UIElement(game), 
+mHealthBarHeight(20.0f), mHealthBarWidth(200.0f), mHealthBarPos(Vector2(20,20)), mHealth(health)
 {
+    // Create a health bar UI that is tied to a health component attached to an actor
     std::cout << "Health Bar UI created" << std::endl;
 }
 
@@ -15,8 +18,7 @@ HealthBarUI::~HealthBarUI()
 void HealthBarUI::Draw(SDL_Renderer* renderer)
 {
     DrawHealthOutline(renderer);
-    DrawHealthFill(renderer);
-    
+    DrawHealthFill(renderer, mHealth->GetHealthPercentage());  
 }
 
 void HealthBarUI::DrawHealthOutline(SDL_Renderer* renderer)
@@ -38,12 +40,12 @@ void HealthBarUI::DrawHealthOutline(SDL_Renderer* renderer)
     SDL_RenderDrawRect(renderer, &r);
 }
 
-void HealthBarUI::DrawHealthFill(SDL_Renderer* renderer)
+void HealthBarUI::DrawHealthFill(SDL_Renderer* renderer, float healthPercentage)
 {
     // Draw health fill
     SDL_Rect fill;
 
-    fill.w = static_cast<int>(mHealthBarWidth * mHealthPercentage);
+    fill.w = static_cast<int>(mHealthBarWidth * healthPercentage);
 	fill.h = static_cast<int>(mHealthBarHeight);
 
 	// Center the rectangle around the position of the owner
@@ -55,11 +57,4 @@ void HealthBarUI::DrawHealthFill(SDL_Renderer* renderer)
 
     // Draw the rectangle outline
     SDL_RenderFillRect(renderer, &fill);
-}
-
-void HealthBarUI::Notify(const float& health)
-{
-    // Change health percentage
-    // Draw is called every frame, so only have to change mHealthPercentage
-    mHealthPercentage = health;
 }
